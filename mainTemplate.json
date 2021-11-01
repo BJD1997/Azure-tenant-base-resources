@@ -5,7 +5,7 @@
         "CustomerName": {
             "type": "string",
             "defaultValue": "klantnaam",
-            "maxLength": 15,
+            "maxLength": 10,
             "metadata": {
                 "description": "Vul de naam van de klant t.b.v naamschema"
             }
@@ -17,7 +17,7 @@
                 "description": "Virtueel netwerk (CIDR notatie)"
             }
         },
-        "AADDS-AddressSpace": {
+        "ADDS-AddressSpace": {
             "type": "string",
             "defaultValue": "10.20.0.0/24",
             "metadata": {
@@ -74,8 +74,31 @@
             }
         },
         "deployVPN": {
-            "type": "bool"
-        }   
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "createConnection": {
+            "type": "string",
+            "defaultValue": "No",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ]
+        },
+        "gatewaySku": {
+            "type": "string",
+            "defaultValue": "VpnGw1",
+            "allowedValues": [
+                "Basic",
+                "VpnGw1",
+                "VpnGw2",
+                "VpnGw3"
+            ]
+        }
     },
     "functions": [],
     "variables": {
@@ -105,43 +128,149 @@
             }
         },
         {
-            "name": "[variables('vnetName')]",
-            "type": "Microsoft.Network/virtualNetworks",
-            "apiVersion": "2020-11-01",
-            "location": "[resourceGroup().location]",
-            "tags": {
-                "displayName": "[variables('vnetName')]"
-            },
+            "condition": "[and(not(equals(parameters('deployVPN'),'Yes')),not(equals(parameters('createConnection'),'Yes')))]",
+            "name": "networkOnly",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
             "properties": {
-                "addressSpace": {
-                    "addressPrefixes": [
-                        "[parameters('VNet-addressSpace')]"
-                    ]
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/BJD1997/DeployAzureNetworkWithGatewayandStorage/main/networkOnly.json",
+                    "contentVersion": "1.0.0.0"
                 },
-                "subnets": [
-                    {
-                        "name": "[variables('firstSubnetName')]",
-                        "properties": {
-                            "addressPrefix": "[parameters('AADDS-AddressSpace')]"
-                        }
+                "parameters": {
+                    "vnetName": {
+                        "value": "[variables('vnetName')]"
                     },
-                    {
-                        "name": "[variables('secondSubnetName')]",
-                        "properties": {
-                            "addressPrefix": "[parameters('AVD-AddressSpace')]"
-                        }
+                    "VNet-addressSpace": {
+                        "value": "[parameters('VNet-addressSpace')]"
                     },
-                    {
-                        "name": "[variables('GatewaySubnetName')]",
-                        "properties": {
-                            "addressPrefix": "[parameters('GatewaySubnet-AddressSpace')]"
-                        }
+                    "ADDS-AddressSpace": {
+                        "value": "[parameters('ADDS-AddressSpace')]"
+                    },
+                    "AVD-AddressSpace": {
+                        "value": "[parameters('AVD-AddressSpace')]"
+                    },
+                    "firstSubnetName": {
+                        "value": "[variables('firstSubnetName')]"
+                    },
+                    "secondSubnetName": {
+                        "value": "[variables('secondSubnetName')]"
                     }
-                ]
+                }
             }
         },
-
-                    
+        {
+            "condition": "[and(not(equals(parameters('deployVPN'),'No')),not(equals(parameters('createConnection'),'Yes')))]",
+            "name": "networkAndGateway",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/BJD1997/DeployAzureNetworkWithGatewayandStorage/main/networkAndGateway.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vnetName": {
+                        "value": "[variables('vnetName')]"
+                    },
+                    "VNet-addressSpace": {
+                        "value": "[parameters('VNet-addressSpace')]"
+                    },
+                    "ADDS-AddressSpace": {
+                        "value": "[parameters('ADDS-AddressSpace')]"
+                    },
+                    "AVD-AddressSpace": {
+                        "value": "[parameters('AVD-AddressSpace')]"
+                    },
+                    "firstSubnetName": {
+                        "value": "[variables('firstSubnetName')]"
+                    },
+                    "secondSubnetName": {
+                        "value": "[variables('secondSubnetName')]"
+                    },
+                    "GatewaySubnetName": {
+                        "value": "[variables('GatewaySubnetName')]"
+                    },
+                    "GatewaySubnet-AddressSpace": {
+                        "value": "[parameters('GatewaySubnet-AddressSpace')]"
+                    },
+                    "VPNGatewayPip": {
+                        "value": "[variables('VPNGatewayPip')]"
+                    },
+                    "VPNGatewayName": {
+                        "value": "[variables('VPNGatewayName')]" 
+                    },
+                    "gatewaySku": {
+                        "value": "[parameters('gatewaySku')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[and(not(equals(parameters('deployVPN'),'No')),not(equals(parameters('createConnection'),'No')))]",
+            "name": "networkGatewayAndConnection",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/BJD1997/DeployAzureNetworkWithGatewayandStorage/main/networkGatewayAndConnection.json",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vnetName": {
+                        "value": "[variables('vnetName')]"
+                    },
+                    "VNet-addressSpace": {
+                        "value": "[parameters('VNet-addressSpace')]"
+                    },
+                    "ADDS-AddressSpace": {
+                        "value": "[parameters('ADDS-AddressSpace')]"
+                    },
+                    "AVD-AddressSpace": {
+                        "value": "[parameters('AVD-AddressSpace')]"
+                    },
+                    "firstSubnetName": {
+                        "value": "[variables('firstSubnetName')]"
+                    },
+                    "secondSubnetName": {
+                        "value": "[variables('secondSubnetName')]"
+                    },
+                    "GatewaySubnetName": {
+                        "value": "[variables('GatewaySubnetName')]"
+                    },
+                    "GatewaySubnet-AddressSpace": {
+                        "value": "[parameters('GatewaySubnet-AddressSpace')]"
+                    },
+                    "VPNGatewayPip": {
+                        "value": "[variables('VPNGatewayPip')]"
+                    },
+                    "VPNGatewayName": {
+                        "value": "[variables('VPNGatewayName')]" 
+                    },
+                    "gatewaySku": {
+                        "value": "[parameters('gatewaySku')]"
+                    },
+                    "localNetworkGateway": {
+                        "value": "[variables('localNetworkGateway')]"
+                    },
+                    "localNetworkAddressRange": {
+                        "value": "[parameters('localNetworkAddressRange')]"
+                    },
+                    "localGatewayIP": {
+                        "value": "[parameters('localGatewayIP')]"
+                    },
+                    "vpnVnetConnectionName": {
+                        "value": "[variables('vpnVnetConnectionName')]"
+                    },
+                    "ipsecPSK": {
+                        "value": "[parameters('ipsecPSK')]"
+                    }
+                }
+            }
+        },                    
         {
             "name": "[parameters('VPNGatewayPip')]",
             "type": "Microsoft.Network/publicIPAddresses",
