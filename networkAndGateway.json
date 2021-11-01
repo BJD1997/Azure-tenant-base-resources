@@ -1,1 +1,118 @@
-
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetName": {
+            "type": "string"
+        },
+        "VNet-addressSpace": {
+            "type": "string"
+        },
+        "ADDS-AddressSpace": {
+            "type": "string"
+        },
+        "AVD-AddressSpace": {
+            "type": "string"
+        },
+        "firstSubnetName": {
+            "type": "string"
+        },
+        "secondSubnetName": {
+            "type": "string"
+        },
+        "GatewaySubnetName": {
+            "type": "string"
+        },
+        "GatewaySubnet-AddressSpace": {
+            "type": "string"
+        },
+        "VPNGatewayPip": {
+            "type": "string"
+        },
+        "VPNGatewayName": {
+            "type": "string"
+        },
+        "gatewaySku": {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "name": "[parameters('vnetName')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('VNet-addressSpace')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('firstSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('ADDS-AddressSpace')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('secondSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('AVD-AddressSpace')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('GatewaySubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('GatewaySubnet-AddressSpace')]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[parameters('VPNGatewayPip')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2020-11-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                 "publicIPAllocationMethod": "Dynamic"
+            }
+        },
+        {
+            "name": "[parameters('VPNGatewayName')]",
+            "type": "Microsoft.Network/virtualNetworkGateways",
+            "apiVersion": "2020-11-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('VPNGatewayPip'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "vnetGatewayConfig",
+                        "properties": {
+                             "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('GatewaySubnetName'))]"
+                             },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('VPNGatewayPip'))]"
+                            }
+                        }                  
+                    }
+                ],
+                "sku": {
+                    "name": "[parameters('gatewaySku')]",
+                    "tier": "[parameters('gatewaySku')]"
+                },
+                "gatewayType": "Vpn",
+                "vpnType": "RouteBased",
+                "enableBgp": false
+            }
+        }
+    ],
+    "outputs": {}
+}
