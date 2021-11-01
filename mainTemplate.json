@@ -1,0 +1,227 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "CustomerName": {
+            "type": "string",
+            "defaultValue": "klantnaam",
+            "maxLength": 15,
+            "metadata": {
+                "description": "Vul de naam van de klant t.b.v naamschema"
+            }
+        },
+        "VNet-addressSpace": {
+            "type": "string",
+            "defaultValue": "10.20.0.0/20",
+            "metadata": {
+                "description": "Virtueel netwerk (CIDR notatie)"
+            }
+        },
+        "AADDS-AddressSpace": {
+            "type": "string",
+            "defaultValue": "10.20.0.0/24",
+            "metadata": {
+                "description": "AADDS Subnet (CIDR notatie)"
+            }
+        },
+        "AVD-AddressSpace": {
+            "type": "string",
+            "defaultValue": "10.20.1.0/24",
+            "metadata": {
+                "description": "AVD Subnet (CIDR notatie)"
+            }
+        },
+        "GatewaySubnet-AddressSpace": {
+            "type": "string",
+            "defaultValue": "10.20.2.0/24",
+            "metadata": {
+                "description": "Gateway Subnet (CIDR notatie)"
+            }
+        },
+        "ipsecPSK": {
+            "type": "string",
+            "defaultValue": "sharedPSK",
+            "metadata": {
+                "description": "PSK voor de VPN connectie"
+            }
+        },
+        "CustomerCity": {
+            "type": "string",
+            "defaultValue": "plaatsnaam",
+            "metadata": {
+                "description": "plaatsnaam voor de VPN connectie"
+            }
+        },
+        "CustomerZipCode": {
+            "type": "string",
+            "defaultValue": "postcode",
+            "metadata": {
+                "description": "postcode voor de VPN connectie" 
+            }
+        },
+        "localGatewayIP": {
+            "type": "string",
+            "defaultValue": "127.0.0.1",
+            "metadata": {
+                "description": "WAN IP van lokale router"
+            }
+        },
+        "localNetworkAddressRange": {
+            "type": "string",
+            "defaultValue": "127.0.0.1/24",
+            "metadata": {
+                "description": "Lokale IP Reeks"
+            }
+        },
+        "deployVPN": {
+            "type": "bool"
+        }   
+    },
+    "functions": [],
+    "variables": {
+        "vnetName": "[concat(parameters('CustomerName'), '-vnet-01')]",
+        "storageName": "[concat(parameters('CustomerName'), 'stor')]",
+        "firstSubnetName": "aadds",
+        "secondSubnetName": "wvd-hosts",
+        "GatewaySubnetName": "GatewaySubnet",
+        "VPNGatewayPip": "[concat(parameters('CustomerName'), '-vgw-pip-01')]",
+        "VPNGatewayName": "[concat(parameters('CustomerName'), '-vgw-01')]",
+        "vpnVnetConnectionName": "[concat(parameters('CustomerName'), '-cn-', parameters('CustomerCity'), '-', parameters('CustomerZipCode'))]",
+        "localNetworkGateway": "[concat(parameters('CustomerName'), '-lgw-', parameters('CustomerCity'), '-', parameters('CustomerZipCode'))]"
+    },
+    "resources": [
+        {
+            "name": "[variables('storageName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2021-04-01",
+            "tags": {
+                "displayName": "[variables('storageName')]"
+            },
+            "location": "[resourceGroup().location]",
+            "kind": "FileStorage",
+            "sku": {
+                "name": "Premium_LRS",
+                "tier": "Premium"
+            }
+        },
+        {
+            "name": "[variables('vnetName')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[variables('vnetName')]"
+            },
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('VNet-addressSpace')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('firstSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('AADDS-AddressSpace')]"
+                        }
+                    },
+                    {
+                        "name": "[variables('secondSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('AVD-AddressSpace')]"
+                        }
+                    },
+                    {
+                        "name": "[variables('GatewaySubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('GatewaySubnet-AddressSpace')]"
+                        }
+                    }
+                ]
+            }
+        },
+
+                    
+        {
+            "name": "[parameters('VPNGatewayPip')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2020-11-01",
+            "location": "[resourceGroup().location]",
+            "tags": {
+                "displayName": "[parameters('VPNGatewayPip')]"
+            },
+            "properties": {
+                 "publicIPAllocationMethod": "Dynamic"
+            }
+        },
+        {
+            "name": "[parameters('VPNGatewayName')]",
+            "type": "Microsoft.Network/virtualNetworkGateways",
+            "apiVersion": "2020-11-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('VPNGatewayPip'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "vnetGatewayConfig",
+                        "properties": {
+                             "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('GatewaySubnetName'))]"
+                             },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('VPNGatewayPip'))]"
+                            }
+                        }                  
+                    }
+                ],
+                "sku": {
+                    "name": "VpnGw1",
+                    "tier": "VpnGw1"
+                },
+                "gatewayType": "Vpn",
+                "vpnType": "RouteBased",
+                "enableBgp": false
+            }
+        },
+        {
+            "name": "[variables('localNetworkGateway')]",
+            "type": "Microsoft.Network/localNetworkGateways",
+            "apiVersion": "2020-11-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "localNetworkAddressSpace": {
+                    "addressPrefixes": [
+                    "[parameters('localNetworkAddressRange')]"
+                    ]
+                },
+                "gatewayIpAddress": "[parameters('localGatewayIP')]"
+            }
+        },
+        {
+            "name": "[variables('vpnVnetConnectionName')]",
+            "type": "Microsoft.Network/connections",
+            "apiVersion": "2020-11-01",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworkGateways', parameters('VPNGatewayName'))]",
+                "[resourceId('Microsoft.Network/localNetworkGateways', variables('localNetworkGateway'))]"
+            ],
+            "properties": {
+                "virtualNetworkGateway1": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworkGateways', parameters('VPNGatewayName'))]"
+                },
+                "localNetworkGateway2": {
+                    "id": "[resourceId('Microsoft.Network/localNetworkGateways', variables('localNetworkGateway'))]"
+                },
+            "connectionType": "IPsec",
+            "routingWeight": 0,
+            "sharedKey": "[parameters('ipsecPSK')]"
+            }
+        }                   
+    ],
+    "outputs": {}
+}
