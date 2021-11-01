@@ -3,6 +3,22 @@
     "handler": "Microsoft.Azure.CreateUIDef",
     "version": "0.1.2-preview",
     "parameters": {
+        "config": {
+            "isWizard": false,
+            "basics": {
+                "description": "Deployment van een basis netwerk in Azure",
+                "resourceGroup": {
+                    "allowExisting": true
+                },
+                "location": {
+                    "label": "Locatie voor de aan te maken resources",
+                    "allowedValues": [
+                        "westeurope"
+                    ],
+                    "visible": true
+                }
+            }
+        },
         "basics": [
             {
                 "name": "CustomerName",
@@ -10,8 +26,7 @@
                 "label": "Bedrijfsnaam van de klant",
                 "defaultValue": "",
                 "constraints": {
-                    "required": true,
-                    "maxLength": 10
+                    "required": true
                 }
             }
         ],
@@ -306,8 +321,8 @@
             "localGatewayIP": "[steps('networking').localGatewayIP]",
             "localNetworkAddressRange": "[steps('networking').localGatewayAddressSpace]",
             "deployVPN": "[steps('networking').VpnGw]",
-            "gatewaySku": "[steps('networking').GwSku]",
-            "outTagsByResource": "[steps('tags').tagsByResource]"
+            "createConnection": "[steps('networking').createConnection]",
+            "gatewaySku": "[steps('networking').GwSku]"
         }
     }
 }
