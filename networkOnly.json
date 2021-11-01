@@ -1,1 +1,55 @@
-
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetName": {
+            "type": "string"
+        },
+        "VNet-addressSpace": {
+            "type": "string"
+        },
+        "ADDS-AddressSpace": {
+            "type": "string"
+        },
+        "AVD-AddressSpace": {
+            "type": "string"
+        },
+        "firstSubnetName": {
+            "type": "string"
+        },
+        "secondSubnetName": {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "name": "[parameters('vnetName')]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('VNet-addressSpace')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[parameters('firstSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('ADDS-AddressSpace')]"
+                        }
+                    },
+                    {
+                        "name": "[parameters('secondSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('AVD-AddressSpace')]"
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {}
+}
