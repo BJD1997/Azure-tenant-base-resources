@@ -26,14 +26,16 @@
                 "label": "Bedrijfsnaam van de klant",
                 "defaultValue": "",
                 "constraints": {
-                    "required": true
+                    "required": true,
+                    "regex": "^[a-z0-9]{1,10}$",
+                    "validationMessage": "De klantnaam moet tussen de 1 en 10 karakters lang zijn en mag alleen kleine letters en cijfers bevatten."
                 }
             }
         ],
         "steps": [
 {
                     "name": "networking",
-                    "label": "VPN",
+                    "label": "Netwerk",
                     "bladeTitle": "lzGs",
                     "elements": [
                         {
@@ -243,7 +245,9 @@
                             "defaultValue": "9723JA",
                             "visible": "[and(not(equals(steps('networking').createConnection,'No')), not(equals(steps('networking').VpnGw,'No')))]",
                             "constraints": {
-                                "required": true
+                                "required": true,
+                                "regex": "^[1-9][0-9]{3}(?!sa|sd|ss|SA|SD|SS)[A-Z]{2}$",
+                                "validationMessage": "De postcode moet als volgt worden opgegeven: 1234AB"
                             }
                         },
                         {
