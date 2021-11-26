@@ -135,8 +135,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/BJD1997/DeployAzureNetworkWithGatewayandStorage/main/networkOnly.json",
-                    "contentVersion": "1.0.0.0"
+                    "relativePath": "linkedTemplates/networkOnly.json"
                 },
                 "parameters": {
                     "vnetName": {
@@ -168,8 +167,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/BJD1997/DeployAzureNetworkWithGatewayandStorage/main/networkAndGateway.json",
-                    "contentVersion": "1.0.0.0"
+                    "relativePath": "linkedTemplates/networkAndGateway.json"
                 },
                 "parameters": {
                     "vnetName": {
@@ -216,8 +214,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/BJD1997/DeployAzureNetworkWithGatewayandStorage/main/networkGatewayAndConnection.json",
-                    "contentVersion": "1.0.0.0"
+                    "relativePath": "linkedTemplates/networkGatewayAndConnection.json"
                 },
                 "parameters": {
                     "vnetName": {
