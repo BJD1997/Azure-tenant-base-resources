@@ -1,4 +1,4 @@
-# Deploy base resources deployment
+# Deploy base resources
 Deploy base resources in a empty tenant.
 
 # Deployed resources
