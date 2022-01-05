@@ -2,8 +2,8 @@
 Deploy base resources in a empty tenant.
 
 # Deployed resources
-  - virtual network
-  - storage account with file share for FSLogix
+  - Virtual network
+  - Storage account with file share for FSLogix
   - Virtual network Gateway with public ip
   - Local Gateway and site-to-site VPN connection
 
