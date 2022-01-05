@@ -210,7 +210,7 @@
                             "name": "createConnection",
                             "type": "Microsoft.Common.OptionsGroup",
                             "label": "Enter values for the first Site to Site connection?",
-                            "defaultValue": "Nee",
+                            "defaultValue": "No",
                             "visible": "[not(equals(steps('networking').VpnGw,'No'))]",
                             "constraints": {
                                 "required": true,
