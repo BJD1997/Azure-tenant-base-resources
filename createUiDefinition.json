@@ -6,12 +6,12 @@
         "config": {
             "isWizard": false,
             "basics": {
-                "description": "Deployment van een basis netwerk in Azure",
+                "description": "Deployment of basic resources in Azure",
                 "resourceGroup": {
                     "allowExisting": true
                 },
                 "location": {
-                    "label": "Locatie voor de aan te maken resources",
+                    "label": "Location for the resources to be deployed in",
                     "allowedValues": [
                         "westeurope"
                     ],
@@ -23,33 +23,33 @@
             {
                 "name": "CustomerName",
                 "type": "Microsoft.Common.TextBox",
-                "label": "Bedrijfsnaam van de klant",
+                "label": "Enter custommer name",
                 "defaultValue": "",
                 "constraints": {
                     "required": true,
                     "regex": "^[a-z0-9]{1,10}$",
-                    "validationMessage": "De klantnaam moet tussen de 1 en 10 karakters lang zijn en mag alleen kleine letters en cijfers bevatten."
+                    "validationMessage": "The custommer name has te be between 1 and 10 charactars long and contain only numbers and non capital letters."
                 }
             }
         ],
-        "steps": [
-{
+        "steps":[
+                {
                     "name": "networking",
-                    "label": "Netwerk",
+                    "label": "Network",
                     "bladeTitle": "lzGs",
                     "elements": [
                         {
                             "name": "vnetAddressSpace",
                             "type": "Microsoft.Common.TextBox",
-                            "label": "Address space (benodigd voor het virtuele netwerk)",
-                            "toolTip": "Vul een CIDR adres range in (b.v 10.20.0.0/20)",
+                            "label": "Address space (Needed for the virtual network)",
+                            "toolTip": "Enter a CIDR range (for example 10.20.0.0/20)",
                             "defaultValue": "10.20.0.0/20",
                             "constraints": {
                                 "required": true,
                                 "validations": [
                                     {
                                         "regex": "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\/(1[0-9]|2[0-4]))$",
-                                        "message": "Ongeldige CIDR range. Prefix moet zich in de volgende range bevinden [10,24]."
+                                        "message": "Invalid CIDR range. Prefix has to be within this range [10,24]."
                                     }
                                 ]
                             }
@@ -57,30 +57,30 @@
                         {
                             "name": "addsAddressSpace",
                             "type": "Microsoft.Common.TextBox",
-                            "label": "Subnet voor AADDS",
+                            "label": "Subnet for AADDS",
                             "defaultValue": "10.20.0.0/24",
                             "constraints": {
                                 "required": true,
                                 "validations": [
                                     {
                                         "regex": "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\/(2[4-9]))$",
-                                        "message": "Ongeldige CIDR range. Prefix moet zich in de volgende range bevinden [24,27]."
+                                        "message": "Invalid CIDR range. Prefix has to be within this range [24,27]."
                                     },
                                     {
                                         "isValid": "[if(greaterOrEquals(last(split(steps('networking').vnetAddressSpace, '/')), 8), equals(last(take(split(first(split(steps('networking').vnetAddressSpace, '/')), '.'), 1)), last(take(split(first(split(steps('networking').addsAddressSpace, '/')), '.'), 1))), true)]",
-                                        "message": "CIDR range valt niet binnen het bereik van het virtuele netwerk (eerste octet)."
+                                        "message": "CIDR range is not within the scope of the virtual network (fiurst octet)."
                                     },
                                     {
                                         "isValid": "[if(greaterOrEquals(last(split(steps('networking').vnetAddressSpace, '/')), 16), equals(last(take(split(first(split(steps('networking').vnetAddressSpace, '/')), '.'), 2)), last(take(split(first(split(steps('networking').addsAddressSpace, '/')), '.'), 2))), true)]",
-                                        "message": "CIDR range valt niet binnen het bereik van het virtuele netwerk (tweede octet)."
+                                        "message": "CIDR range is not within the scope of the virtual network (second octet)."
                                     },
                                     {
                                         "isValid": "[if(greaterOrEquals(last(split(steps('networking').vnetAddressSpace, '/')), 24), equals(last(take(split(first(split(steps('networking').vnetAddressSpace, '/')), '.'), 3)), last(take(split(first(split(steps('networking').addsAddressSpace, '/')), '.'), 3))), true)]",
-                                        "message": "CIDR range valt niet binnen het bereik van het virtuele netwerk (derde octet)."
+                                        "message": "CIDR range is not within the scope of the virtual network (third octet)."
                                     },
                                     {
                                         "isValid": "[lessOrEquals(last(split(steps('networking').vnetAddressSpace, '/')), last(split(steps('networking').addsAddressSpace, '/')))]",
-                                        "message": "CIDR range valt niet binnen het bereik van het virtuele netwerk (subnet mask)."
+                                        "message": "CIDR range is not within the scope of the virtual network (subnet mask)."
                                     }
                                 ]
                             }
@@ -88,31 +88,31 @@
                                                 {
                             "name": "avdHostsAddressSpace",
                             "type": "Microsoft.Common.TextBox",
-                            "label": "Subnet voor AVD Hosts",
-                            "toolTip": "Vul een CIDR adres range in (b.v 10.20.1.0/24)",
+                            "label": "Subnet for AVD Hosts",
+                            "toolTip": "Enter a CIDR range (for example 10.20.1.0/24)",
                             "defaultValue": "10.20.1.0/24",
                             "constraints": {
                                 "required": true,
                                 "validations": [
                                     {
                                         "regex": "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\/(2[4-7]))$",
-                                        "message": "Ongeldige CIDR range. Prefix moet zich in de volgende range bevinden [24,27]."
+                                        "message": "Invalid CIDR range. Prefix has to be within this range [24,27]."
                                     },
                                     {
                                         "isValid": "[if(greaterOrEquals(last(split(steps('networking').vnetAddressSpace, '/')), 8), equals(last(take(split(first(split(steps('networking').vnetAddressSpace, '/')), '.'), 1)), last(take(split(first(split(steps('networking').avdHostsAddressSpace, '/')), '.'), 1))), true)]",
-                                        "message": "CIDR range valt niet binnen het bereik van het virtuele netwerk (eerste octet)."
+                                        "message": "CIDR range is not within the scope of the virtual network (first octet)."
                                     },
                                     {
                                         "isValid": "[if(greaterOrEquals(last(split(steps('networking').vnetAddressSpace, '/')), 16), equals(last(take(split(first(split(steps('networking').vnetAddressSpace, '/')), '.'), 2)), last(take(split(first(split(steps('networking').avdHostsAddressSpace, '/')), '.'), 2))), true)]",
-                                        "message": "CIDR range valt niet binnen het bereik van het virtuele netwerk (tweede octet)."
+                                        "message": "CIDR range is not within the scope of the virtual network (second octet)."
                                     },
                                     {
                                         "isValid": "[if(greaterOrEquals(last(split(steps('networking').vnetAddressSpace, '/')), 24), equals(last(take(split(first(split(steps('networking').vnetAddressSpace, '/')), '.'), 3)), last(take(split(first(split(steps('networking').avdHostsAddressSpace, '/')), '.'), 3))), true)]",
-                                        "message": "CIDR range valt niet binnen het bereik van het virtuele netwerk (derde octet)."
+                                        "message": "CIDR range is not within the scope of the virtual network (third octet)."
                                     },
                                     {
                                         "isValid": "[lessOrEquals(last(split(steps('networking').vnetAddressSpace, '/')), last(split(steps('networking').avdHostsAddressSpace, '/')))]",
-                                        "message": "CIDR range valt niet binnen het bereik van het virtuele netwerk (subnet mask)."
+                                        "message": "CIDR range is not within the scope of the virtual network (subnet mask)."
                                     }
                                 ]
                             }
@@ -121,16 +121,16 @@
                             "name": "VpnGw",
                             "type": "Microsoft.Common.OptionsGroup",
                             "label": "Deploy VPN Gateway",
-                            "defaultValue": "Nee",
+                            "defaultValue": "No",
                             "constraints": {
                                 "required": true,
                                 "allowedValues": [
                                     {
-                                        "label": "Ja",
+                                        "label": "Yes",
                                         "value": "Yes"
                                     },
 									{
-										"label": "Nee",
+										"label": "No",
 										"value": "No"
 									}
                                 ]
@@ -140,7 +140,7 @@
                         {
                             "name": "GwSku",
                             "type": "Microsoft.Common.DropDown",
-                            "label": "Selecteer de VPN Gateway SKU",
+                            "label": "Select VPN Gateway SKU",
                             "defaultValue": "VpnGw1",
                             "multiselect": false,
                             "selectAll": false,
@@ -152,22 +152,22 @@
                                 "allowedValues": [
                                     {
                                         "label": "Basic",
-                                        "description": "Ondersteund geen BGP, max 10 S2S/VNet-VNet tunnels, max 128 P2S SSTP verbindingen, geen ondersteuning voor IKEv2/OpenVPN verbindingen, doorvoer is 100 Mbps",
+                                        "description": "Doesn't support BGP, max 10 S2S/VNet-VNet tunnels, max 128 P2S SSTP connections, no support fpr IKEv2/OpenVPN connections, aggregate throughput is 100 Mbps",
                                         "value": "Basic"
                                     },
                                     {
                                         "label": "VpnGw1",
-                                        "description": "Ondersteund BGP, max 30 S2S/VNet-VNet tunnels (waarvan 10 inbegrepen), max 128 P2S SSTP verbindingen, max 250 IKEv2/OpenVPN verbindingen, doorvoer is 650 Mbps",
+                                        "description": "Supports BGP, max 30 S2S/VNet-VNet tunnels (of which 10 are included), max 128 P2S SSTP connections, max 250 IKEv2/OpenVPN connections, aggregate throughput is 650 Mbps",
                                         "value": "VpnGw1"
                                     },
                                     {
                                         "label": "VpnGw2",
-                                        "description": "Ondersteund BGP, max 30 S2S/VNet-VNet tunnels (waarvan 10 inbegrepen), max 128 P2S SSTP verbindingen, max 500 IKEv2/OpenVPN verbindingen, doorvoer is 1 Gbps",
+                                        "description": "Supports BGP, max 30 S2S/VNet-VNet tunnels (of which 10 are included), max 128 P2S SSTP connections, max 500 IKEv2/OpenVPN connections, aggregate throughput is 1 Gbps",
                                         "value": "VpnGw2"
                                     },
                                     {
                                         "label": "VpnGw3",
-                                        "description": "Ondersteund BGP, max 30 S2S/VNet-VNet tunnels (waarvan 10 inbegrepen), max 128 P2S SSTP verbindingen, max 1000 IKEv2/OpenVPN verbindingen, doorvoer is 1,25 Gbps",
+                                        "description": "Supports BGP, max 30 S2S/VNet-VNet tunnels (of which 10 are included), max 128 P2S SSTP connections, max 1000 IKEv2/OpenVPN connections, aggregate throughput is 1,25 Gbps",
                                         "value": "VpnGw3"
                                     }
                                 ]
@@ -176,8 +176,8 @@
                         {
                             "name": "vpnAddressSpace",
                             "type": "Microsoft.Common.TextBox",
-                            "label": "Subnet voor VPN Gateways",
-                            "toolTip": "Vul een CIDR adres range in (b.v 10.20.2.0/24)",
+                            "label": "Subnet for VPN Gateways",
+                            "toolTip": "Enter a CIDR range (for example 10.20.2.0/24)",
                             "defaultValue": "10.20.2.0/24",
                             "visible": "[not(equals(steps('networking').VpnGw,'No'))]",
                             "constraints": {
@@ -185,23 +185,23 @@
                                 "validations": [
                                     {
                                         "regex": "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\/(2[4-7]))$",
-                                        "message": "Ongeldige CIDR range. Prefix moet zich in de volgende range bevinden [24,27]."
+                                        "message": "Invalid CIDR range. Prefix has to be within this range [24,27]."
                                     },
                                     {
                                         "isValid": "[if(greaterOrEquals(last(split(steps('networking').vnetAddressSpace, '/')), 8), equals(last(take(split(first(split(steps('networking').vnetAddressSpace, '/')), '.'), 1)), last(take(split(first(split(steps('networking').vpnAddressSpace, '/')), '.'), 1))), true)]",
-                                        "message": "CIDR range valt niet binnen het bereik van het virtuele netwerk (eerste octet)."
+                                        "message": "CIDR range is not within the scope of the virtual network (first octet)."
                                     },
                                     {
                                         "isValid": "[if(greaterOrEquals(last(split(steps('networking').vnetAddressSpace, '/')), 16), equals(last(take(split(first(split(steps('networking').vnetAddressSpace, '/')), '.'), 2)), last(take(split(first(split(steps('networking').vpnAddressSpace, '/')), '.'), 2))), true)]",
-                                        "message": "CIDR range valt niet binnen het bereik van het virtuele netwerk (tweede octet)."
+                                        "message": "CIDR range is not within the scope of the virtual network (second octet)."
                                     },
                                     {
                                         "isValid": "[if(greaterOrEquals(last(split(steps('networking').vnetAddressSpace, '/')), 24), equals(last(take(split(first(split(steps('networking').vnetAddressSpace, '/')), '.'), 3)), last(take(split(first(split(steps('networking').vpnAddressSpace, '/')), '.'), 3))), true)]",
-                                        "message": "CIDR range valt niet binnen het bereik van het virtuele netwerk (derde octet)."
+                                        "message": "CIDR range is not within the scope of the virtual network (third octet)."
                                     },
                                     {
                                         "isValid": "[lessOrEquals(last(split(steps('networking').vnetAddressSpace, '/')), last(split(steps('networking').vpnAddressSpace, '/')))]",
-                                        "message": "CIDR range valt niet binnen het bereik van het virtuele netwerk (subnet mask)."
+                                        "message": "CIDR range is not within the scope of the virtual network (subnet mask)."
                                     }
                                 ]
                             }
@@ -209,18 +209,18 @@
                         {
                             "name": "createConnection",
                             "type": "Microsoft.Common.OptionsGroup",
-                            "label": "Alvast de eerste VPN verbinding opgeven?",
+                            "label": "Enter values for the first Site to Site connection?",
                             "defaultValue": "Nee",
                             "visible": "[not(equals(steps('networking').VpnGw,'No'))]",
                             "constraints": {
                                 "required": true,
                                 "allowedValues": [
                                     {
-                                        "label": "Ja",
+                                        "label": "Yes",
                                         "value": "Yes"
                                     },
 									{
-										"label": "Nee",
+										"label": "No",
 										"value": "No"
 									}
                                 ]
@@ -229,9 +229,9 @@
                         {
                             "name": "connectionCity",
                             "type": "Microsoft.Common.TextBox",
-                            "label": "Vul de plaatsnaam in",
-                            "toolTip": "Vul de plaatsnaam in van de locatie waar de router staat",
-                            "defaultValue": "Groningen",
+                            "label": "Enter the city",
+                            "toolTip": "Enter the city where the remote gateway is located",
+                            "defaultValue": "ExampleCity",
                             "visible": "[and(not(equals(steps('networking').createConnection,'No')), not(equals(steps('networking').VpnGw,'No')))]",
                             "constraints": {
                                 "required": true
@@ -240,22 +240,22 @@
                         {
                             "name": "connectionZipCode",
                             "type": "Microsoft.Common.TextBox",
-                            "label": "Vul de postcode",
-                            "toolTip": "Vul de postcode in van locatie waar de router staat",
+                            "label": "Enter ZIP code",
+                            "toolTip": "Enter the zip code where the remote gateway is located",
                             "defaultValue": "9723JA",
                             "visible": "[and(not(equals(steps('networking').createConnection,'No')), not(equals(steps('networking').VpnGw,'No')))]",
                             "constraints": {
                                 "required": true,
                                 "regex": "^[1-9][0-9]{3}(?!sa|sd|ss|SA|SD|SS)[A-Z]{2}$",
-                                "validationMessage": "De postcode moet als volgt worden opgegeven: 1234AB"
+                                "validationMessage": "Zip code has te be in the following format: 1234AB"
                             }
                         },
                         {
                             "name": "localGatewayIP",
                             "type": "Microsoft.Common.TextBox",
-                            "label": "Vul het WAN adres in",
-                            "toolTip": "Vul het WAN adres in van de router waar verbinding mee word gemaakt",
-                            "defaultValue": "212.78.220.238",
+                            "label": "Enter WAN IP",
+                            "toolTip": "Enter the WAN IP to which Azure has to connect",
+                            "defaultValue": "8.8.8.8",
                             "visible": "[and(not(equals(steps('networking').createConnection,'No')), not(equals(steps('networking').VpnGw,'No')))]",
                             "constraints": {
                                 "required": true
@@ -264,16 +264,16 @@
                         {
                             "name": "localGatewayAddressSpace",
                             "type": "Microsoft.Common.TextBox",
-                            "label": "Lokale CIDR range",
+                            "label": "local CIDR range",
                             "toolTip": "Vul de lokale CIDR range in",
-                            "defaultValue": "10.75.1.0/24",
+                            "defaultValue": "192.168.1.0/24",
                             "visible": "[and(not(equals(steps('networking').createConnection,'No')), not(equals(steps('networking').VpnGw,'No')))]",
                             "constraints": {
                                 "required": true,
                                 "validations": [
                                     {
                                         "regex": "^(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\/(1[0-9]|2[0-4]))$",
-                                        "message": "Ongeldige CIDR range. Prefix moet zich in de volgende range bevinden [10,24]."
+                                        "message": "Invalid CIDR range. Prefix has to be within this range [10,24]."
                                     }
                                 ]
                             }
@@ -281,34 +281,75 @@
                         {
                             "name": "connectionPSK",
                             "type": "Microsoft.Common.TextBox",
-                            "label": "Vul de PSK in",
-                            "toolTip": "Vul de Pre Shared Key in voor de VPN verbinding",
+                            "label": "Enter PSK",
+                            "toolTip": "Enter the Pre Shared Key to setup the VPN",
                             "defaultValue": "PSK",
                             "visible": "[and(not(equals(steps('networking').createConnection,'No')), not(equals(steps('networking').VpnGw,'No')))]",
                             "constraints": {
                                 "required": true
                             }
                         }       
-                    ]
-                
+                    ]       
             
             },
             {
-                "name": "tags",
-                "label": "Tags",
+                "name": "storage",
+                "label": "Storage",
                 "elements": [
                     {
-                        "name": "tagsByResource",
-                        "type": "Microsoft.Common.TagsByResource",
-                        "resources": [
-                            "Microsoft.Storage/storageAccounts",
-                            "Microsoft.Compute/virtualMachines",
-                            "Microsoft.Network/virtualNetworkGateways",
-                            "Microsoft.Network/localNetworkGateways",
-                            "Microsoft.Network/connections",
-                            "Microsoft.Network/publicIPAddresses",
-                            "microsoft.network/virtualnetworks"
-                        ]
+                        "name": "fslogixShareSize",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "FSLogix Share Capacity in Gigabytes",
+                        "defaultValue": 100,
+                        "toolTip": "Enter FSlogix file share size, minimum is 100GB",
+                        "constraints": {
+                            "validations": [
+                                {
+                                    "regex": "^((102400)|(102[0-3][0-9]{2})|(10[0-1][0-9]{3})|([1-9][0-9]{4})|([1-9][0-9]{3})|([1-9][0-9]{2}))$",
+                                    "message": "Enter a value from 100 to 102400."
+                                }
+                            ],
+                            "required": true
+                        },
+                        "visible": true
+                    },
+                    {
+                        "name": "isShareSoftDeleteEnabled",
+                        "type": "Microsoft.Common.OptionsGroup",
+                        "label": "Enable Soft Delete",
+                        "defaultValue": "No",
+                        "toolTip": "",
+                        "constraints": {
+                            "allowedValues": [
+                                {
+                                    "label": "Yes",
+                                    "value": true
+                                },
+                                {
+                                    "label": "No",
+                                    "value": false
+                                }
+                            ],
+                            "required": true
+                        },
+                        "visible": true
+                    },
+                    {
+                        "name": "shareSoftDeleteRetentionDays",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Soft Delete Retention Days",
+                        "defaultValue": 7,
+                        "toolTip": "Enter amount of days before deleted files are actually deleted",
+                        "constraints": {
+                            "validations": [
+                                {
+                                    "regex": "^((36[0-5])|(3[0-5][0-9]{1})|([1-2][0-9]{2})|([1-9][0-9]{1})|([1-9]))$",
+                                    "message": "Vul een waarde in tussen 1 en 365."
+                                }
+                            ],
+                            "required": true
+                        },
+                        "visible": "[not(equals(steps('storage').isShareSoftDeleteEnabled, false ))]"
                     }
                 ]
             }
@@ -326,7 +367,10 @@
             "localNetworkAddressRange": "[steps('networking').localGatewayAddressSpace]",
             "deployVPN": "[steps('networking').VpnGw]",
             "createConnection": "[steps('networking').createConnection]",
-            "gatewaySku": "[steps('networking').GwSku]"
+            "gatewaySku": "[steps('networking').GwSku]",
+            "fslogixShareSize": "[steps('storage').fslogixShareSize]",
+            "isShareSoftDeleteEnabled": "[steps('storage').isShareSoftDeleteEnabled]",
+            "shareSoftDeleteRetentionDays": "[steps('storage').shareSoftDeleteRetentionDays]"
         }
     }
 }

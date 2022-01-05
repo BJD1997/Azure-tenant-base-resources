@@ -4,73 +4,73 @@
     "parameters": {
         "CustomerName": {
             "type": "string",
-            "defaultValue": "klantnaam",
+            "defaultValue": "example",
             "maxLength": 10,
             "metadata": {
-                "description": "Vul de naam van de klant t.b.v naamschema"
+                "description": "Enter custommer name for naming scheme"
             }
         },
         "VNet-addressSpace": {
             "type": "string",
             "defaultValue": "10.20.0.0/20",
             "metadata": {
-                "description": "Virtueel netwerk (CIDR notatie)"
+                "description": "Virtueel netwerk (CIDR format)"
             }
         },
         "ADDS-AddressSpace": {
             "type": "string",
             "defaultValue": "10.20.0.0/24",
             "metadata": {
-                "description": "AADDS Subnet (CIDR notatie)"
+                "description": "AADDS Subnet (CIDR format)"
             }
         },
         "AVD-AddressSpace": {
             "type": "string",
             "defaultValue": "10.20.1.0/24",
             "metadata": {
-                "description": "AVD Subnet (CIDR notatie)"
+                "description": "AVD Subnet (CIDR format)"
             }
         },
         "GatewaySubnet-AddressSpace": {
             "type": "string",
             "defaultValue": "10.20.2.0/24",
             "metadata": {
-                "description": "Gateway Subnet (CIDR notatie)"
+                "description": "Gateway Subnet (CIDR format)"
             }
         },
         "ipsecPSK": {
             "type": "string",
             "defaultValue": "sharedPSK",
             "metadata": {
-                "description": "PSK voor de VPN connectie"
+                "description": "PSK for the site to site connection"
             }
         },
         "CustomerCity": {
             "type": "string",
-            "defaultValue": "plaatsnaam",
+            "defaultValue": "City",
             "metadata": {
-                "description": "plaatsnaam voor de VPN connectie"
+                "description": "City name to be used for naming scheme"
             }
         },
         "CustomerZipCode": {
             "type": "string",
-            "defaultValue": "postcode",
+            "defaultValue": "ZIP code",
             "metadata": {
-                "description": "postcode voor de VPN connectie" 
+                "description": "ZIP code to be used for naming scheme" 
             }
         },
         "localGatewayIP": {
             "type": "string",
             "defaultValue": "127.0.0.1",
             "metadata": {
-                "description": "WAN IP van lokale router"
+                "description": "WAN IP of localgateway"
             }
         },
         "localNetworkAddressRange": {
             "type": "string",
             "defaultValue": "127.0.0.1/24",
             "metadata": {
-                "description": "Lokale IP Reeks"
+                "description": "Local subnet"
             }
         },
         "deployVPN": {
@@ -98,6 +98,27 @@
                 "VpnGw2",
                 "VpnGw3"
             ]
+        },
+        "fslogixShareSize": {
+            "type": "int",
+            "defaultValue": 100,
+            "metadata": {
+                "description": "FSLogix Share Capacity"
+            }
+        },
+        "isShareSoftDeleteEnabled": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Enable Soft Delete"
+            }
+        },
+        "shareSoftDeleteRetentionDays": {
+            "type": "int",
+            "defaultValue": 7,
+            "metadata": {
+                "description": "Soft Delete Retention Days"
+            }
         }
     },
     "functions": [],
@@ -116,7 +137,13 @@
         {
             "name": "[variables('storageName')]",
             "type": "Microsoft.Storage/storageAccounts",
-            "apiVersion": "2021-04-01",
+            "apiVersion": "2021-06-01",
+            "properties": {
+                "supportsHttpsTrafficOnly": true,
+                "allowBlobPublicAccess": false,
+                "allowSharedKeyAccess": true,
+                "minimumTlsVersion": "TLS1_2"
+            },
             "tags": {
                 "displayName": "[variables('storageName')]"
             },
@@ -125,7 +152,34 @@
             "sku": {
                 "name": "Premium_LRS",
                 "tier": "Premium"
-            }
+            },
+            "resources": [
+                    {
+                        "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+                        "apiVersion": "2021-06-01",
+                        "properties": {
+                            "shareQuota": "[parameters('fslogixShareSize')]"
+                        },
+                        "name": "[concat(variables('storageName'), '/default/fslogix')]",
+                        "dependsOn": [
+                            "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]"
+                        ]
+                    }
+                ]
+        },
+        {
+            "name": "[concat(variables('storageName'), '/default')]",
+            "type": "Microsoft.Storage/storageAccounts/fileservices",
+            "apiVersion": "2021-06-01",
+            "properties": {
+                "shareDeleteRetentionPolicy": {
+                    "enabled": "[parameters('isShareSoftDeleteEnabled')]",
+                    "days": "[parameters('shareSoftDeleteRetentionDays')]"
+                }
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', variables('storageName'))]"
+            ]
         },
         {
             "condition": "[and(not(equals(parameters('deployVPN'),'Yes')),not(equals(parameters('createConnection'),'Yes')))]",
