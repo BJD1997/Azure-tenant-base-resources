@@ -210,7 +210,7 @@
                             "name": "createConnection",
                             "type": "Microsoft.Common.OptionsGroup",
                             "label": "Enter values for the first Site to Site connection?",
-                            "defaultValue": "Nee",
+                            "defaultValue": "No",
                             "visible": "[not(equals(steps('networking').VpnGw,'No'))]",
                             "constraints": {
                                 "required": true,
@@ -242,7 +242,7 @@
                             "type": "Microsoft.Common.TextBox",
                             "label": "Enter ZIP code",
                             "toolTip": "Enter the zip code where the remote gateway is located",
-                            "defaultValue": "9723JA",
+                            "defaultValue": "1234AB",
                             "visible": "[and(not(equals(steps('networking').createConnection,'No')), not(equals(steps('networking').VpnGw,'No')))]",
                             "constraints": {
                                 "required": true,
