@@ -1,7 +1,7 @@
-# Deploy base resources
-Deploy base resources in a empty tenant.
+# Deploy managed app
+Deploy an managed "app" which includes a wizard style deployment of the base resources.
 
-# Deployed resources
+# Resources inside te managed app
   - Virtual network
   - Premium Storage account with file share for FSLogix
   - Virtual network Gateway with public ip
