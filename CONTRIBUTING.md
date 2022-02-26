@@ -17,16 +17,6 @@ You can help me built this project by improving my code, finding bugs, solving t
 
 At this moment I can't provide support for this project, so please do not use my contact info or the issue tracker for support related questions
 
-# Ground Rules
-### Set expectations for behavior (yours, and theirs).
-This includes not just how to communicate with others (being respectful, considerate, etc) but also technical responsibilities (importance of testing, project dependencies, etc). Mention and link to your code of conduct, if you have one.
-
-> Responsibilities
-> * Create issues for any major changes and enhancements that you wish to make. Discuss things transparently and get community feedback.
-> * Be welcoming to newcomers and encourage diverse new contributors from all backgrounds. 
-
-[source: [cookiecutter](https://github.com/audreyr/cookiecutter/blob/master/CONTRIBUTING.rst)] **Need more inspiration?** [1] [Celery](https://github.com/celery/celery/blob/master/CONTRIBUTING.rst#community-code-of-conduct) [2] [geocoder](https://github.com/alexreisner/geocoder#contributing)
-
 # Your First Contribution
 
 At this time you can start to work on anything you see fit on the project. Since I'm just learing about Github myself I don't have much experience setting up guidelines.
