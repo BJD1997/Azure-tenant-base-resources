@@ -8,8 +8,3 @@ Deploy base resources in a empty tenant.
   - Local Gateway and site-to-site VPN connection
 
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)]
-
-Test change github gpg key vscode and git
-Another test
-And yet another test
-And another gpg signing test
