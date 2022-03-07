@@ -10,3 +10,4 @@ Deploy base resources in a empty tenant.
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)]
 
 Test change github gpg key vscode and git
+Another test
