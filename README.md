@@ -12,3 +12,4 @@ Deploy base resources in a empty tenant.
 Test change github gpg key vscode and git
 Another test
 And yet another test
+And another gpg signing test
